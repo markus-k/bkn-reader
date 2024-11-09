@@ -147,12 +147,7 @@ static struct bkn_method* read_bkn_method(struct bkn_file* bknFile, struct bkn_m
     while(true) {
         value = read_bkn_field(bknFile);
         
-        size_t s = (bknMethod->numMetadata + 1) * sizeof(char*);
-        if (bknMethod->metadata == NULL) {
-            bknMethod->metadata = malloc(s);
-        } else {
-            bknMethod->metadata = realloc(bknMethod->metadata, s);
-        }
+        bknMethod->metadata = realloc(bknMethod->metadata, (bknMethod->numMetadata + 1) * sizeof(char*));
 
         if (bknMethod->metadata == NULL) {
             out_of_memory();
@@ -242,18 +237,13 @@ bool read_bkn(char* filePath, struct bkn_data* bknData) {
             // No more method data in file
             break;   
         }
-
-        size_t s = (bknData->numMethods + 1) * sizeof(struct bkn_method);
-        if (bknData->methods == NULL){
-            bknData->methods = malloc(s);
-            memset(bknData->methods, 0, s);
-        } else {
-            bknData->methods = realloc(bknData->methods, s);
-        }
+        
+        bknData->methods = realloc(bknData->methods, (bknData->numMethods + 1) * sizeof(struct bkn_method));
 
         if (bknData->methods == NULL) {
             out_of_memory();
         }
+        memset(&bknData->methods[bknData->numMethods], 0, sizeof(struct bkn_method));
         
         read_bkn_method(&bknFile, &bknData->methods[bknData->numMethods]);
         bknData->numMethods++;
